@@ -1,5 +1,11 @@
 #!/bin/bash
 VERSION=0.1
+MOBY_BRANCH=25.0
+CLI_BRANCH=25.0
+# MOBY_COMMIT=ec89e7cde1ff1bcbd9b09f9139c770d6dde7ffcb
+# CLI_COMMIT=e1f24d3c93df6752d3c27c8d61d18260f141310c
+BUILDX_VERSION=v0.12.1
+CTOP_VERSION=0.7.7
 echo ""
 echo "$0 version $VERSION"
 echo "Docker compiler (client and server) for CoreELEC systems"
@@ -32,8 +38,8 @@ function print_error_arg_buildx () {
   echo "    <arch> must be ${bold}arm64${normal}, ${bold}armv7${normal} or ${bold}armv6${normal}"
 }
 
-BUILDX_PREFIX="buildx-v0.5.1."
-CTOP_PREFIX="ctop-0.7.5-"
+BUILDX_PREFIX="buildx-$BUILDX_VERSION."
+CTOP_PREFIX="ctop-$CTOP_VERSION-"
 ARCH=""
 arch_uname=$(uname -m)
 if [ -z "${arch_uname##*aarch64*}" ]; then
@@ -75,7 +81,7 @@ case "$subcommand" in
     fi
     while getopts ":a" opt; do
       case ${opt} in
-        a ) 
+        a )
           if [ $# -eq 0 ]; then
 	    print_error_arg_buildx
           fi
@@ -106,7 +112,7 @@ case "$subcommand" in
 	      ;;
 	  esac
           ;;
-        * ) 
+        * )
           echo "Invalid option"
           echo "Usage:"
           echo "    $0 buildx -a <arch>"
@@ -136,7 +142,7 @@ if [ "$BUILD_METHOD" == "buildx" ]; then
   else
     echo "Support for buildx not detected"
     exit 1
-  fi 
+  fi
 fi
 
 #
@@ -149,27 +155,46 @@ mkdir -p storage/.docker/bin storage/.docker/cli-plugins storage/.docker/data-ro
 # Download from github
 #
 
-curl -L --fail https://github.com/docker/buildx/releases/download/v0.8.2/$BUILDX_PREFIX$BUILDX_SUFFIX -o ./storage/.docker/cli-plugins/docker-buildx && chmod a+x ./storage/.docker/cli-plugins/docker-buildx
-curl -L --fail https://github.com/bcicen/ctop/releases/download/v0.7.7/$CTOP_PREFIX$CTOP_SUFFIX -o ./storage/.docker/bin/ctop && chmod a+x ./storage/.docker/bin/ctop
+curl -L --fail https://github.com/docker/buildx/releases/download/$BUILDX_VERSION/$BUILDX_PREFIX$BUILDX_SUFFIX -o ./storage/.docker/cli-plugins/docker-buildx && chmod a+x ./storage/.docker/cli-plugins/docker-buildx
+curl -L --fail https://github.com/bcicen/ctop/releases/download/v$CTOP_VERSION/$CTOP_PREFIX$CTOP_SUFFIX -o ./storage/.docker/bin/ctop && chmod a+x ./storage/.docker/bin/ctop
 curl -L --fail https://raw.githubusercontent.com/linuxserver/docker-docker-compose/master/run.sh -o ./storage/.docker/bin/docker-compose && chmod a+x ./storage/.docker/bin/docker-compose
 cd build_tmp
 git clone https://github.com/moby/moby.git
-cd moby && git checkout -t origin/22.06 && git checkout ec89e7cde1ff1bcbd9b09f9139c770d6dde7ffcb && cd ..
+#  解释一下下面的含义
+#  1. 进入moby目录
+#  2. 切换到22.06分支
+#  3. 切换到ec89e7cde1ff1bcbd9b09f9139c770d6dde7ffcb提交
+#  4. 返回上一级目录
+#  5. 打补丁
+cd moby && git checkout -t origin/$MOBY_BRANCH && cd ..
+# --- moby_corelec/cmd/dockerd/daemon_unix.go
+# +++ moby/cmd/dockerd/daemon_unix.go
+# @@ -24,7 +24,8 @@
+
+#  func getDefaultDaemonConfigDir() (string, error) {
+#  	if !honorXDG {
+# -		return "/etc/docker", nil
+# +//		return "/etc/docker", nil
+# +		return "/storage/.config/docker/etc", nil
+#  	}
+#  	// NOTE: CLI uses ~/.docker while the daemon uses ~/.config/docker, because
+#  	// ~/.docker was not designed to store daemon configurations.
+
 patch -p0 < ../patch/patch_daemon_unix_go.patch
 git clone https://github.com/docker/cli.git
 # cd cli && git checkout -t origin/20.10 && cd ..
-cd cli && git checkout e1f24d3c93df6752d3c27c8d61d18260f141310c && cd ..
+cd cli && git checkout -t origin/$CLI_BRANCH && cd ..
 if [ "$BUILD_METHOD" == "buildx" ]; then
   cd moby
   MOBY_VERSION=$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)
-  VERSION="$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)" USE_BUILDX=1 BUILDX="docker buildx" BUILDX_BUILD_EXTRA_OPTS="--platform $ARCH" make 
+  VERSION="$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)" USE_BUILDX=1 BUILDX="docker buildx" BUILDX_BUILD_EXTRA_OPTS="--platform $ARCH" make
   cd ../cli
   VERSION="$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)" docker buildx bake --set binary.platform=$ARCH
   cd ../..
 else
   cd moby
   MOBY_VERSION=$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)
-  VERSION="$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)"  make 
+  VERSION="$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)"  make
   cd ../cli
   VERSION="$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)" docker buildx bake
   cd ../..
