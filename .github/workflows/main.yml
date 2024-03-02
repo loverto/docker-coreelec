@@ -23,6 +23,7 @@ jobs:
 
     - name: Run docker-compiler.sh
       run: |
+        cd /home/runner/work/docker-coreelec/docker-coreelec
         chmod +x ./docker-compiler.sh
         ./docker-compiler.sh buildx
       env:
