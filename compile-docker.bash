@@ -223,6 +223,15 @@ log "Patched: $(git diff)"
 # 把打好补丁的源码再合并到最新的$MOBY_BRANCH分支切出的分支上
 # 1. moby
 log "Merge patched source code to moby branch"
+
+#  git config --global user.email "you@example.com"
+# git config --global user.name "Your Name"
+
+# 设置全局的用户名和邮箱
+git config --global user.email "coreelec@coreelec.com"
+git config --global user.name "coreelec"
+
+
 # # 应用补丁后验证
 # git diff # 查看变更
 # # 或者检查补丁命令的输出来确认是否成功
