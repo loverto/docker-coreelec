@@ -200,55 +200,7 @@ git clone https://github.com/moby/moby.git
 #  4. 返回上一级目录
 #  5. 打补丁
 log "进入moby目录,并切换分支，切换提交"
-cd moby && git checkout -t origin/$MOBY_BRANCH && git checkout $MOBY_PATCH_COMMIT && cd ..
-
-# --- moby_corelec/cmd/dockerd/daemon_unix.go
-# +++ moby/cmd/dockerd/daemon_unix.go
-# @@ -24,7 +24,8 @@
-
-#  func getDefaultDaemonConfigDir() (string, error) {
-#  	if !honorXDG {
-# -		return "/etc/docker", nil
-# +//		return "/etc/docker", nil
-# +		return "/storage/.config/docker/etc", nil
-#  	}
-#  	// NOTE: CLI uses ~/.docker while the daemon uses ~/.config/docker, because
-#  	// ~/.docker was not designed to store daemon configurations.
-
-patch -p0 < ../patch/patch_daemon_unix_go.patch
-
-# 验证是否打补丁成功
-# 1. moby/cmd/dockerd/daemon_unix.go
-log "Patched: $(git diff)"
-# 把打好补丁的源码再合并到最新的$MOBY_BRANCH分支切出的分支上
-# 1. moby
-log "Merge patched source code to moby branch"
-
-#  git config --global user.email "you@example.com"
-# git config --global user.name "Your Name"
-
-# 设置全局的用户名和邮箱
-git config --global user.email "coreelec@coreelec.com"
-git config --global user.name "coreelec"
-
-
-# # 应用补丁后验证
-# git diff # 查看变更
-# # 或者检查补丁命令的输出来确认是否成功
-
-# # 创建新分支
-# git checkout -b patched-branch
-
-# # 切换到目标分支，这里假设是最新分支
-# git checkout latest-branch
-
-# # 合并你的更改
-# git merge patched-branch
-
-# # 解决可能出现的合并冲突
-
-cd moby && git checkout -b $MOBY_BRANCH-patched && git add . && git commit -m "Patched" && git checkout $MOBY_BRANCH && git merge $MOBY_BRANCH-patched && cd ..
-
+cd moby && git checkout -t origin/$MOBY_BRANCH && cd ..
 
 git clone https://github.com/docker/cli.git
 # cd cli && git checkout -t origin/20.10 && cd ..
