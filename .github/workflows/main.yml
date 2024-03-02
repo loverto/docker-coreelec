@@ -23,9 +23,8 @@ jobs:
 
     - name: Run docker-compiler.sh
       run: |
-        cd /home/runner/work/docker-coreelec/docker-coreelec
-        chmod +x ./docker-compiler.sh
-        ./docker-compiler.sh buildx
+        chmod +x ./compile-docker.bash
+        ./compile-docker.bash buildx
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
