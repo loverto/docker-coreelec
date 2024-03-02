@@ -207,11 +207,22 @@ git clone https://github.com/docker/cli.git
 cd cli && git checkout -t origin/$CLI_BRANCH && cd ..
 if [ "$BUILD_METHOD" == "buildx" ]; then
   cd moby
+  log "进入moby目录"
   MOBY_VERSION=$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)
-  VERSION="$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)" USE_BUILDX=1 BUILDX="docker buildx" BUILDX_BUILD_EXTRA_OPTS="--platform $ARCH" make
+  log "MOBY_VERSION: $MOBY_VERSION"
+  VERSION="$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)"
+  log "VERSION: $VERSION"
+  USE_BUILDX=1
+  log "USE_BUILDX: $USE_BUILDX"
+  BUILDX="docker buildx" BUILDX_BUILD_EXTRA_OPTS="--platform $ARCH" make
+  log "BUILDX: $BUILDX"
   cd ../cli
-  VERSION="$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)" docker buildx bake --set binary.platform=$ARCH
+  log "进入cli目录"
+  VERSION="$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)"
+  log "VERSION: $VERSION"
+  docker buildx bake --set binary.platform=$ARCH
   cd ../..
+  log "返回上上级目录"
 else
   cd moby
   MOBY_VERSION=$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)
@@ -220,6 +231,21 @@ else
   VERSION="$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags)" docker buildx bake
   cd ../..
 fi
+#  检查文件是否存在
+#  1. build_tmp/moby/bundles/binary-daemon/containerd
+#  2. build_tmp/moby/bundles/binary-daemon/containerd-shim-runc-v2
+#  3. build_tmp/moby/bundles/binary-daemon/ctr
+#  4. build_tmp/moby/bundles/binary-daemon/docker-init
+#  5. build_tmp/moby/bundles/binary-daemon/docker-proxy
+#  6. build_tmp/moby/bundles/binary-daemon/dockerd
+#  7. build_tmp/moby/bundles/binary-daemon/dockerd-rootless-setuptool.sh
+#  8. build_tmp/moby/bundles/binary-daemon/dockerd-rootless.sh
+#  9. build_tmp/moby/bundles/binary-daemon/rootlesskit
+#  10. build_tmp/moby/bundles/binary-daemon/rootlesskit-docker-proxy
+#  11. build_tmp/moby/bundles/binary-daemon/runc
+#  12. build_tmp/moby/bundles/binary-daemon/vpnkit
+#  13. build_tmp/cli/build/docker*
+log "Check if the file exists $(ls -l build_tmp/moby/bundles/binary-daemon/containerd | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/containerd-shim-runc-v2 | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/ctr | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/docker-init | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/docker-proxy | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/dockerd | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/dockerd-rootless-setuptool.sh | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/dockerd-rootless.sh | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/rootlesskit | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/rootlesskit-docker-proxy | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/runc | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/vpnkit | awk '{print $9}') $(ls -l build_tmp/cli/build/docker* | awk '{print $9}')"
 cp -p build_tmp/moby/bundles/binary-daemon/{containerd,containerd-shim-runc-v2,ctr,docker-init,docker-proxy,dockerd,dockerd-rootless-setuptool.sh,dockerd-rootless.sh,rootlesskit,rootlesskit-docker-proxy,runc,vpnkit} ./storage/.docker/bin
 cp -p build_tmp/cli/build/docker* ./storage/.docker/bin
 TIME_NOW=$(date +"%Y%m%d%H%M%S")
