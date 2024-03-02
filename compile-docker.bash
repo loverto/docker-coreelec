@@ -2,10 +2,17 @@
 VERSION=0.1
 MOBY_BRANCH=25.0
 CLI_BRANCH=25.0
-# MOBY_COMMIT=ec89e7cde1ff1bcbd9b09f9139c770d6dde7ffcb
+MOBY_PATCH_COMMIT=ec89e7cde1ff1bcbd9b09f9139c770d6dde7ffcb
 # CLI_COMMIT=e1f24d3c93df6752d3c27c8d61d18260f141310c
 BUILDX_VERSION=v0.12.1
 CTOP_VERSION=0.7.7
+
+# 通用日志打印，格式为：[2021-08-25 10:00:00] [INFO] 信息
+function log() {
+  echo -e "\033[32m[$(date "+%Y-%m-%d %H:%M:%S")] [INFO] $1\033[0m"
+}
+
+
 echo ""
 echo "$0 version $VERSION"
 echo "Docker compiler (client and server) for CoreELEC systems"
@@ -148,17 +155,43 @@ fi
 #
 # Preparing environment
 #
+log "Preparing environment"
 rm -rf ./build_tmp && rm -f ./storage/.docker/bin/* && rm -f ./storage/.docker/cli-plugins/*
+
+# 为了避免后续操作中出现文件不存在的情况，这里创建了一些目录
+# 打印都创建了哪些目录
+# storage/.docker/bin
+# storage/.docker/cli-plugins
+# storage/.docker/data-root
+# build_tmp
+log "Creating directories storage/.docker/bin storage/.docker/cli-plugins storage/.docker/data-root build_tmp"
+
 mkdir -p storage/.docker/bin storage/.docker/cli-plugins storage/.docker/data-root build_tmp
+
+# 验证是否创建成功
+# 1. storage/.docker/bin
+# 2. storage/.docker/cli-plugins
+# 3. storage/.docker/data-root
+# 4. build_tmp
+log "Directories created: $(ls -l | grep storage | awk '{print $9}') $(ls -l | grep build_tmp | awk '{print $9}')"
 
 #
 # Download from github
 #
+log "Downloading from github"
 
 curl -L --fail https://github.com/docker/buildx/releases/download/$BUILDX_VERSION/$BUILDX_PREFIX$BUILDX_SUFFIX -o ./storage/.docker/cli-plugins/docker-buildx && chmod a+x ./storage/.docker/cli-plugins/docker-buildx
 curl -L --fail https://github.com/bcicen/ctop/releases/download/v$CTOP_VERSION/$CTOP_PREFIX$CTOP_SUFFIX -o ./storage/.docker/bin/ctop && chmod a+x ./storage/.docker/bin/ctop
 curl -L --fail https://raw.githubusercontent.com/linuxserver/docker-docker-compose/master/run.sh -o ./storage/.docker/bin/docker-compose && chmod a+x ./storage/.docker/bin/docker-compose
+
+log "Downloaded from github: $(ls -l ./storage/.docker/cli-plugins/docker-buildx | awk '{print $9}') $(ls -l ./storage/.docker/bin/ctop | awk '{print $9}') $(ls -l ./storage/.docker/bin/docker-compose | awk '{print $9}')"
 cd build_tmp
+
+# 下载moby和cli源码
+# 1. moby
+# 2. cli
+log "Downloading moby and cli source code"
+
 git clone https://github.com/moby/moby.git
 #  解释一下下面的含义
 #  1. 进入moby目录
@@ -166,7 +199,9 @@ git clone https://github.com/moby/moby.git
 #  3. 切换到ec89e7cde1ff1bcbd9b09f9139c770d6dde7ffcb提交
 #  4. 返回上一级目录
 #  5. 打补丁
-cd moby && git checkout -t origin/$MOBY_BRANCH && cd ..
+log "进入moby目录,并切换分支，切换提交"
+cd moby && git checkout -t origin/$MOBY_BRANCH && git checkout $MOBY_PATCH_COMMIT && cd ..
+
 # --- moby_corelec/cmd/dockerd/daemon_unix.go
 # +++ moby/cmd/dockerd/daemon_unix.go
 # @@ -24,7 +24,8 @@
@@ -181,6 +216,31 @@ cd moby && git checkout -t origin/$MOBY_BRANCH && cd ..
 #  	// ~/.docker was not designed to store daemon configurations.
 
 patch -p0 < ../patch/patch_daemon_unix_go.patch
+
+# 验证是否打补丁成功
+# 1. moby/cmd/dockerd/daemon_unix.go
+log "Patched: $(git diff)"
+# 把打好补丁的源码再合并到最新的$MOBY_BRANCH分支切出的分支上
+# 1. moby
+log "Merge patched source code to moby branch"
+# # 应用补丁后验证
+# git diff # 查看变更
+# # 或者检查补丁命令的输出来确认是否成功
+
+# # 创建新分支
+# git checkout -b patched-branch
+
+# # 切换到目标分支，这里假设是最新分支
+# git checkout latest-branch
+
+# # 合并你的更改
+# git merge patched-branch
+
+# # 解决可能出现的合并冲突
+
+cd moby && git checkout -b $MOBY_BRANCH-patched && git add . && git commit -m "Patched" && git checkout $MOBY_BRANCH && git merge $MOBY_BRANCH-patched && cd ..
+
+
 git clone https://github.com/docker/cli.git
 # cd cli && git checkout -t origin/20.10 && cd ..
 cd cli && git checkout -t origin/$CLI_BRANCH && cd ..

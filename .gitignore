@@ -3,3 +3,4 @@ docker_*.gz
 build_tmp/
 storage/.docker/bin/
 storage/.docker/cli-plugins/
+.vscode/settings.json
