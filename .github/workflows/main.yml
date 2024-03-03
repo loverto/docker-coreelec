@@ -27,7 +27,7 @@ jobs:
         ./compile-docker.bash buildx -a arm64
       env:
         DESTDIR: ./bundles/binary-daemon/
-        PLATFORM: arm64
+        PLATFORM: linux/arm64
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
