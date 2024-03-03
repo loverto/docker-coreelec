@@ -28,7 +28,7 @@ jobs:
     - name: Run docker-compiler.sh
       run: |
         chmod +x ./compile-docker.bash
-        ./compile-docker.bash buildx -a arm64
+        ./compile-docker.bash build
       env:
         DESTDIR: ./bundles/binary-daemon/
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
