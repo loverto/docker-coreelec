@@ -5,10 +5,6 @@ on: workflow_dispatch
 jobs:
   build:
     runs-on: ubuntu-latest
-    # 指定为arm64架构
-    strategy:
-      matrix:
-        platform: [linux/arm64]
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -28,7 +24,7 @@ jobs:
     - name: Run docker-compiler.sh
       run: |
         chmod +x ./compile-docker.bash
-        ./compile-docker.bash build
+        ./compile-docker.bash buildx -a arm64
       env:
         DESTDIR: ./bundles/binary-daemon/
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
