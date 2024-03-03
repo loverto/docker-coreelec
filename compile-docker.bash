@@ -216,8 +216,8 @@ if [ "$BUILD_METHOD" == "buildx" ]; then
   log "USE_BUILDX: $USE_BUILDX"
   BUILDX="docker buildx" BUILDX_BUILD_EXTRA_OPTS="--platform $ARCH" make
   log "查看当前目录： $(ls -l)"
-  # 查看当前目录下bundles和bundles/binary 和bundles/binary目录下的文件
-  log "查看当前目录下bundles和bundles/binary/bundles/binary目录下的文件： $(ls -l bundles) $(ls -l bundles/binary) $(ls -l bundles/binary)"
+  # 查看当前目录下bundles和bundles/binary-daemon 和bundles/binary目录下的文件
+  log "查看当前目录下bundles和bundles/binary-daemon/bundles/binary目录下的文件： $(ls -l bundles) $(ls -l bundles/binary-daemon) $(ls -l bundles/binary)"
   log "BUILDX: $BUILDX"
   cd ../cli
   log "进入cli目录"
@@ -235,20 +235,20 @@ else
   cd ../..
 fi
 #  检查文件是否存在
-#  1. build_tmp/moby/bundles/binary/containerd
-#  2. build_tmp/moby/bundles/binary/containerd-shim-runc-v2
-#  3. build_tmp/moby/bundles/binary/ctr
-#  4. build_tmp/moby/bundles/binary/docker-init
-#  5. build_tmp/moby/bundles/binary/docker-proxy
-#  6. build_tmp/moby/bundles/binary/dockerd
-#  7. build_tmp/moby/bundles/binary/dockerd-rootless-setuptool.sh
-#  8. build_tmp/moby/bundles/binary/dockerd-rootless.sh
-#  9. build_tmp/moby/bundles/binary/rootlesskit
-#  10. build_tmp/moby/bundles/binary/rootlesskit-docker-proxy
-#  11. build_tmp/moby/bundles/binary/runc
-#  12. build_tmp/moby/bundles/binary/vpnkit
+#  1. build_tmp/moby/bundles/binary-daemon/containerd
+#  2. build_tmp/moby/bundles/binary-daemon/containerd-shim-runc-v2
+#  3. build_tmp/moby/bundles/binary-daemon/ctr
+#  4. build_tmp/moby/bundles/binary-daemon/docker-init
+#  5. build_tmp/moby/bundles/binary-daemon/docker-proxy
+#  6. build_tmp/moby/bundles/binary-daemon/dockerd
+#  7. build_tmp/moby/bundles/binary-daemon/dockerd-rootless-setuptool.sh
+#  8. build_tmp/moby/bundles/binary-daemon/dockerd-rootless.sh
+#  9. build_tmp/moby/bundles/binary-daemon/rootlesskit
+#  10. build_tmp/moby/bundles/binary-daemon/rootlesskit-docker-proxy
+#  11. build_tmp/moby/bundles/binary-daemon/runc
+#  12. build_tmp/moby/bundles/binary-daemon/vpnkit
 #  13. build_tmp/cli/build/docker*
-log "Check if the file exists $(ls -l build_tmp/moby/bundles/binary/containerd | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary/containerd-shim-runc-v2 | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary/ctr | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary/docker-init | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary/docker-proxy | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary/dockerd | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary/dockerd-rootless-setuptool.sh | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary/dockerd-rootless.sh | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary/rootlesskit | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary/rootlesskit-docker-proxy | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary/runc | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary/vpnkit | awk '{print $9}') $(ls -l build_tmp/cli/build/docker* | awk '{print $9}')"
+log "Check if the file exists $(ls -l build_tmp/moby/bundles/binary-daemon/containerd | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/containerd-shim-runc-v2 | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/ctr | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/docker-init | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/docker-proxy | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/dockerd | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/dockerd-rootless-setuptool.sh | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/dockerd-rootless.sh | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/rootlesskit | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/rootlesskit-docker-proxy | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/runc | awk '{print $9}') $(ls -l build_tmp/moby/bundles/binary-daemon/vpnkit | awk '{print $9}') $(ls -l build_tmp/cli/build/docker* | awk '{print $9}')"
 cp -p build_tmp/moby/bundles/binary/{containerd,containerd-shim-runc-v2,ctr,docker-init,docker-proxy,dockerd,dockerd-rootless-setuptool.sh,dockerd-rootless.sh,rootlesskit,rootlesskit-docker-proxy,runc,vpnkit} ./storage/.docker/bin
 cp -p build_tmp/cli/build/docker* ./storage/.docker/bin
 TIME_NOW=$(date +"%Y%m%d%H%M%S")
