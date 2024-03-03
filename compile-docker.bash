@@ -216,8 +216,8 @@ if [ "$BUILD_METHOD" == "buildx" ]; then
   log "USE_BUILDX: $USE_BUILDX"
   BUILDX="docker buildx" BUILDX_BUILD_EXTRA_OPTS="--platform $ARCH" make
   log "查看当前目录： $(ls -l)"
-  # 查看当前目录下bundles和bundles/binary-daemon目录下的文件
-  log "查看当前目录下bundles和bundles/binary-daemon目录下的文件： $(ls -l bundles) $(ls -l bundles/binary-daemon)"
+  # 查看当前目录下bundles和bundles/binary-daemon 和bundles/binary目录下的文件
+  log "查看当前目录下bundles和bundles/binary-daemon/bundles/binary目录下的文件： $(ls -l bundles) $(ls -l bundles/binary-daemon) $(ls -l bundles/binary)"
   log "BUILDX: $BUILDX"
   cd ../cli
   log "进入cli目录"
