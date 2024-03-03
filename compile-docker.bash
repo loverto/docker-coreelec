@@ -215,6 +215,7 @@ if [ "$BUILD_METHOD" == "buildx" ]; then
   USE_BUILDX=1
   log "USE_BUILDX: $USE_BUILDX"
   BUILDX="docker buildx" BUILDX_BUILD_EXTRA_OPTS="--platform $ARCH" make
+  log "查看当前目录： $(ls -l)"
   log "BUILDX: $BUILDX"
   cd ../cli
   log "进入cli目录"
