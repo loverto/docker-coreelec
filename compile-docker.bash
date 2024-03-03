@@ -214,7 +214,7 @@ if [ "$BUILD_METHOD" == "buildx" ]; then
   log "VERSION: $VERSION"
   USE_BUILDX=1
   log "USE_BUILDX: $USE_BUILDX"
-  BUILDX="docker buildx" PLATFORM="$ARCH" make all
+  BUILDX="docker buildx" PLATFORM="$ARCH" docker buildx bake all --set binary.platform=$ARCH
   log "查看当前目录： $(ls -l)"
   # 查看当前目录下bundles和bundles/binary-daemon 和bundles/binary目录下的文件
   log "查看当前目录下bundles和bundles/binary-daemon/bundles/binary目录下的文件： $(ls -l bundles) $(ls -l bundles/binary-daemon) $(ls -l bundles/binary)"
