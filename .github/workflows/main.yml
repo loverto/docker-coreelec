@@ -35,3 +35,10 @@ jobs:
       with:
         name: docker-build-artifact
         path: ./docker*.tar.gz
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files:  ./*.tar.gz
+        draft: true
+        fail_on_unmatched_files: true

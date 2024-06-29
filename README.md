@@ -11,7 +11,7 @@ This project provides structure to install the Docker version 25.0, latest (fetc
 
 ## Download releases
 
-[Download releases](https://github.com/tamusiunas/docker-coreelec/releases)
+[Download releases](https://github.com/loverto/docker-coreelec/releases)
 
 ## Installation (easy way)
 
@@ -19,7 +19,7 @@ This project provides structure to install the Docker version 25.0, latest (fetc
 - Access the device via SSH
 
 ```bash
-curl https://raw.githubusercontent.com/tamusiunas/docker-coreelec/main/auto-install-docker-coreelec.bash > \
+curl https://raw.githubusercontent.com/loverto/docker-coreelec/main/auto-install-docker-coreelec.bash > \
   auto-install-docker-coreelec.bash
 bash ./auto-install-docker-coreelec.bash
 ```
@@ -49,7 +49,7 @@ armv6   |arm6
 To compile for the same platform
 
 ```bash
-git clone https://github.com/tamusiunas/docker-coreelec.git
+git clone https://github.com/loverto/docker-coreelec.git
 cd docker-coreelec
 ./compile-docker.bash build
 ```
@@ -57,7 +57,7 @@ cd docker-coreelec
 To compile on different platform (<arch> is the architecture: arm64, arm7 or arm6)
 
 ```bash
-git clone https://github.com/tamusiunas/docker-coreelec.git
+git clone https://github.com/loverto/docker-coreelec.git
 cd docker-coreelec
 ./compile-docker.bash buildx -a <arch>
 # example: ./compile-docker.bash buildx -a arm64
@@ -71,7 +71,7 @@ When finished a file (.tar.gz) starting with **docker_v25.0** identified by arch
 
 **Important: docker-coreelec (this project) is NOT compatilble with Kodi add-on Docker. If you're using Kodi add-on Docker please remove-it before installing docker-coreelec**
 
-To install it you have to use the download package from [releases](https://github.com/tamusiunas/docker-coreelec/releases).
+To install it you have to use the download package from [releases](https://github.com/loverto/docker-coreelec/releases).
 
 Considering you are using the package name "docker\_v25.0.0-beta.0-167-gec89e7cde1.m\_coreelec\_arm64\_20220808205438.tar.gz"
 

@@ -1,5 +1,7 @@
 #!/bin/bash
+# 版本
 VERSION=0.1
+# 镜像分支名称
 MOBY_BRANCH=25.0
 CLI_BRANCH=25.0
 MOBY_PATCH_COMMIT=ec89e7cde1ff1bcbd9b09f9139c770d6dde7ffcb
@@ -38,6 +40,9 @@ shift $((OPTIND -1))
 bold=$(tput bold)
 normal=$(tput sgr0)
 
+#**
+# * Print error message for buildx 打印 buildx 错误信息
+#
 function print_error_arg_buildx () {
   echo "Invalid architecture"
   echo "Usage:"
